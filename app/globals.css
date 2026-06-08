@@ -3,21 +3,30 @@
 @tailwind utilities;
 
 :root {
-  --background: #000000;
-  --foreground: #ffffff;
+  --background: #09090b;
+  --foreground: #fafafa;
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
   min-height: 100vh;
+  background-image: radial-gradient(
+    60% 50% at 50% 0%,
+    rgba(217, 70, 239, 0.12),
+    transparent 70%
+  );
+  background-attachment: fixed;
 }
 
-/* Force dark mode for inputs and other elements */
+::selection {
+  background: rgba(217, 70, 239, 0.35);
+  color: #fff;
+}
+
 input,
 textarea {
   color-scheme: dark;
-  @apply bg-gray-800 border-gray-700 text-white;
 }
 
 /* Scrollbar customization for dark theme */

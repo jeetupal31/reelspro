@@ -1,30 +1,32 @@
-"use client";
+import type { Metadata } from "next";
+import { Inter } from "next/font/google";
+import "./globals.css";
+import Providers from "./components/Providers";
+import Header from "./components/Header";
 
-import React, { useEffect, useState } from "react";
-import VideoFeed from "./components/VideoFeed";
-import { IVideo } from "@/models/Video";
-import { apiClient } from "@/lib/api-client";
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
-export default function Home() {
-  const [videos, setVideos] = useState<IVideo[]>([]);
+export const metadata: Metadata = {
+  title: "ReelsPro — Share Your Moments",
+  description:
+    "A modern short-video platform built with Next.js, ImageKit, and MongoDB. Upload, stream and share vertical videos.",
+};
 
-  useEffect(() => {
-    const fetchVideos = async () => {
-      try {
-        const data = await apiClient.getVideos();
-        setVideos(data);
-      } catch (error) {
-        console.error("Error fetching videos:", error);
-      }
-    };
-
-    fetchVideos();
-  }, []);
-
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
-    <main className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8">ImageKit ReelsPro</h1>
-      <VideoFeed videos={videos} />
-    </main>
+    <html lang="en">
+      <body className={`${inter.variable} font-sans antialiased`}>
+        <Providers>
+          <div className="min-h-screen bg-zinc-950 text-zinc-100">
+            <Header />
+            {children}
+          </div>
+        </Providers>
+      </body>
+    </html>
   );
 }

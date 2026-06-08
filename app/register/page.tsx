@@ -9,6 +9,7 @@ export default function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
   const { showNotification } = useNotification();
 
@@ -20,6 +21,7 @@ export default function Register() {
       return;
     }
 
+    setLoading(true);
     try {
       const res = await fetch("/api/auth/register", {
         method: "POST",
@@ -28,10 +30,7 @@ export default function Register() {
       });
 
       const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.error || "Registration failed");
-      }
+      if (!res.ok) throw new Error(data.error || "Registration failed");
 
       showNotification("Registration successful! Please log in.", "success");
       router.push("/login");
@@ -40,65 +39,80 @@ export default function Register() {
         error instanceof Error ? error.message : "Registration failed",
         "error"
       );
+    } finally {
+      setLoading(false);
     }
   };
 
+  const inputCls =
+    "w-full rounded-xl border border-white/10 bg-zinc-900 px-4 py-3 text-sm text-white placeholder-zinc-600 outline-none transition focus:border-fuchsia-500 focus:ring-2 focus:ring-fuchsia-500/30";
+
   return (
-    <div className="max-w-md mx-auto">
-      <h1 className="text-2xl font-bold mb-4">Register</h1>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label htmlFor="email" className="block mb-1">
-            Email
-          </label>
-          <input
-            type="email"
-            id="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            className="w-full px-3 py-2 border rounded"
-          />
+    <div className="mx-auto flex min-h-[calc(100vh-4rem)] max-w-md items-center justify-center px-4">
+      <div className="w-full rounded-3xl border border-white/10 bg-white/[0.03] p-8 backdrop-blur">
+        <div className="mb-6 text-center">
+          <h1 className="text-2xl font-bold">Create your account</h1>
+          <p className="mt-1 text-sm text-zinc-400">Join ReelsPro in seconds</p>
         </div>
-        <div>
-          <label htmlFor="password" className="block mb-1">
-            Password
-          </label>
-          <input
-            type="password"
-            id="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            className="w-full px-3 py-2 border rounded"
-          />
-        </div>
-        <div>
-          <label htmlFor="confirmPassword" className="block mb-1">
-            Confirm Password
-          </label>
-          <input
-            type="password"
-            id="confirmPassword"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            required
-            className="w-full px-3 py-2 border rounded"
-          />
-        </div>
-        <button
-          type="submit"
-          className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
-        >
-          Register
-        </button>
-        <p className="text-center mt-4">
-          Already have an account?{" "}
-          <Link href="/login" className="text-blue-500 hover:text-blue-600">
-            Login
-          </Link>
-        </p>
-      </form>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label htmlFor="email" className="mb-1.5 block text-xs font-medium text-zinc-400">
+              Email
+            </label>
+            <input
+              type="email"
+              id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              placeholder="you@example.com"
+              className={inputCls}
+            />
+          </div>
+          <div>
+            <label htmlFor="password" className="mb-1.5 block text-xs font-medium text-zinc-400">
+              Password
+            </label>
+            <input
+              type="password"
+              id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              placeholder="At least 6 characters"
+              className={inputCls}
+            />
+          </div>
+          <div>
+            <label htmlFor="confirmPassword" className="mb-1.5 block text-xs font-medium text-zinc-400">
+              Confirm Password
+            </label>
+            <input
+              type="password"
+              id="confirmPassword"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+              placeholder="Re-enter your password"
+              className={inputCls}
+            />
+          </div>
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full rounded-xl bg-gradient-to-r from-fuchsia-500 to-fuchsia-700 py-3 text-sm font-semibold text-white shadow-lg shadow-fuchsia-900/40 transition hover:-translate-y-0.5 disabled:opacity-60"
+          >
+            {loading ? "Creating account…" : "Create account"}
+          </button>
+          <p className="text-center text-sm text-zinc-400">
+            Already have an account?{" "}
+            <Link href="/login" className="font-medium text-fuchsia-400 hover:underline">
+              Login
+            </Link>
+          </p>
+        </form>
+      </div>
     </div>
   );
 }

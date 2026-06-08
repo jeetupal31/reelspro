@@ -9,6 +9,14 @@
 
 ---
 
+## 📸 Screenshots
+
+| Home Feed | Login |
+|-----------|-------|
+| ![Home](screenshots/home.png) | ![Login](screenshots/login.png) |
+
+---
+
 ## ✨ Features
 
 - 🎥 **Video feed** — infinite scroll of vertical short-form videos

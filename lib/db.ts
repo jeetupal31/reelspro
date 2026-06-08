@@ -2,12 +2,6 @@ import mongoose from "mongoose";
 
 const MONGODB_URI = process.env.MONGODB_URI;
 
-if(!MONGODB_URI) {
-    throw new Error(
-        "Please define the MONGODB_URI environment variable inside .env.local"
-    );
-}
-
 let cached = global.mongoose;
 
 if (!cached) {
@@ -17,6 +11,14 @@ if (!cached) {
 export async function connectToDatabase() {
   if (cached.conn) {
     return cached.conn;
+  }
+
+  // Validate at call time (runtime) rather than module load, so that
+  // importing this module during `next build` doesn't crash without env vars.
+  if (!MONGODB_URI) {
+    throw new Error(
+      "Please define the MONGODB_URI environment variable inside .env.local"
+    );
   }
 
   if (!cached.promise) {

@@ -1,13 +1,15 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 import { useSession, signOut } from "next-auth/react";
-import { Home, User } from "lucide-react";
+import { Home, User, Upload, LogOut } from "lucide-react";
 import { useNotification } from "./Notification";
 
 export default function Header() {
   const { data: session } = useSession();
   const { showNotification } = useNotification();
+  const [open, setOpen] = useState(false);
 
   const handleSignOut = async () => {
     try {
@@ -19,83 +21,80 @@ export default function Header() {
   };
 
   return (
-    <div className="navbar bg-base-300 sticky top-0 z-40">
-      <div className="container mx-auto">
-        <div className="flex-1 px-2 lg:flex-none">
-          <Link
-            href="/"
-            className="btn btn-ghost text-xl gap-2 normal-case font-bold"
-            prefetch={true}
-            onClick={() =>
-              showNotification("Welcome to ImageKit ReelsPro", "info")
-            }
-          >
-            <Home className="w-5 h-5" />
-            ImageKit ReelsPro
-          </Link>
-        </div>
-        <div className="flex flex-1 justify-end px-2">
-          <div className="flex items-stretch gap-2">
-            <div className="dropdown dropdown-end">
-              <div
-                tabIndex={0}
-                role="button"
-                className="btn btn-ghost btn-circle"
-              >
-                <User className="w-5 h-5" />
-              </div>
-              <ul
-                tabIndex={0}
-                className="dropdown-content z-[1] shadow-lg bg-base-100 rounded-box w-64 mt-4 py-2"
-              >
-                {session ? (
-                  <>
-                    <li className="px-4 py-1">
-                      <span className="text-sm opacity-70">
-                        {session.user?.email?.split("@")[0]}
-                      </span>
-                    </li>
-                    <div className="divider my-1"></div>
+    <header className="sticky top-0 z-40 border-b border-white/10 bg-zinc-950/70 backdrop-blur-xl">
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
+        <Link href="/" className="group flex items-center gap-2" prefetch>
+          <span className="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br from-fuchsia-500 to-fuchsia-700 shadow-lg shadow-fuchsia-900/40">
+            <Home className="h-5 w-5 text-white" />
+          </span>
+          <span className="text-lg font-extrabold tracking-tight">
+            Reels<span className="text-fuchsia-400">Pro</span>
+          </span>
+        </Link>
 
-                    <li>
+        <div className="flex items-center gap-3">
+          {session && (
+            <Link
+              href="/upload"
+              className="hidden items-center gap-2 rounded-xl bg-gradient-to-r from-fuchsia-500 to-fuchsia-700 px-4 py-2 text-sm font-semibold text-white transition hover:-translate-y-0.5 sm:inline-flex"
+            >
+              <Upload className="h-4 w-4" /> Upload
+            </Link>
+          )}
+
+          <div className="relative">
+            <button
+              onClick={() => setOpen((o) => !o)}
+              className="grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-white/5 transition hover:bg-white/10"
+              aria-label="Account menu"
+            >
+              <User className="h-5 w-5" />
+            </button>
+
+            {open && (
+              <>
+                <div
+                  className="fixed inset-0 z-10"
+                  onClick={() => setOpen(false)}
+                />
+                <div className="absolute right-0 z-20 mt-3 w-60 overflow-hidden rounded-2xl border border-white/10 bg-zinc-900 shadow-2xl">
+                  {session ? (
+                    <>
+                      <div className="border-b border-white/10 px-4 py-3">
+                        <p className="text-xs text-zinc-500">Signed in as</p>
+                        <p className="truncate text-sm font-medium">
+                          {session.user?.email}
+                        </p>
+                      </div>
                       <Link
                         href="/upload"
-                        className="px-4 py-2 hover:bg-base-200 block w-full"
-                        onClick={() =>
-                          showNotification("Welcome to Admin Dashboard", "info")
-                        }
+                        onClick={() => setOpen(false)}
+                        className="flex items-center gap-2 px-4 py-3 text-sm text-zinc-200 transition hover:bg-white/5"
                       >
-                        Video Upload
+                        <Upload className="h-4 w-4" /> Video Upload
                       </Link>
-                    </li>
-
-                    <li>
                       <button
                         onClick={handleSignOut}
-                        className="px-4 py-2 text-error hover:bg-base-200 w-full text-left"
+                        className="flex w-full items-center gap-2 px-4 py-3 text-left text-sm text-rose-400 transition hover:bg-white/5"
                       >
-                        Sign Out
+                        <LogOut className="h-4 w-4" /> Sign Out
                       </button>
-                    </li>
-                  </>
-                ) : (
-                  <li>
+                    </>
+                  ) : (
                     <Link
                       href="/login"
-                      className="px-4 py-2 hover:bg-base-200 block w-full"
-                      onClick={() =>
-                        showNotification("Please sign in to continue", "info")
-                      }
+                      onClick={() => setOpen(false)}
+                      className="block px-4 py-3 text-sm text-zinc-200 transition hover:bg-white/5"
                     >
                       Login
                     </Link>
-                  </li>
-                )}
-              </ul>
-            </div>
+                  )}
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>
-    </div>
+    </header>
   );
 }
